@@ -10,7 +10,7 @@ import com.apigee.flow.message.MessageContext;
 
 public class Init implements Execution {
 
-    private static final int CONTEXT_VARIABLE_TARGET_LOG = "events";
+    private static final String CONTEXT_VARIABLE_TARGET_LOG = "events";
 
 	/**
 	 * Stores the variables in a log object
@@ -28,7 +28,7 @@ public class Init implements Execution {
 		try {
 			JSONArray log = new JSONArray();
 
-			messageContext.setVariable("events", log);
+			messageContext.setVariable(CONTEXT_VARIABLE_TARGET_LOG, log);
 
             		return ExecutionResult.SUCCESS;
 
