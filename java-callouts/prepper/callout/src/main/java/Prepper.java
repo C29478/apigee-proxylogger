@@ -9,30 +9,31 @@ import com.apigee.flow.execution.spi.Execution;
 import com.apigee.flow.message.MessageContext;
 
 
-public class Submitter implements Execution {
-	
+public class Prepper implements Execution {
+
+    private static final String CONTEXT_TARGET_LOG = "events";
+    private static final String CONTEXT_TARGET_SUBMITTER = "eventJson";
+
 	/**
-	 * Stores the variables in a log object
-	 * 
-	 * The initializer has already executed so this methods first gets the
-         * variables that need to be logged (logVariables) and the object containing
-         * the variables collected thusfar (log)
+	 * Converts the stored variables in a format that is needed by the log management solution of choice
 	 *
+     * Currently this method assumes that the log management solution is Splunk
+     *
 	 * @param messageContext
-	 * @param executionResult 
+	 * @param executionResult
 	 * @return ExecutionResult containing status of the execution
          */
 	public ExecutionResult execute(MessageContext messageContext, ExecutionContext executionContext) {
-		
+
 		try {
-			JSONArray events = messageContext.getVariable("events");
+			JSONArray events = messageContext.getVariable(CONTEXT_TARGET_LOG);
 			JSONObject wrapperObject = new JSONObject();
-			wrapperObject.put("event", events);
+			wrapperObject.put(CONTEXT_TARGET_LOG, events);
 
 			String eventJson = wrapperObject.toJSONString();
 
 
-			messageContext.setVariable("eventJson", eventJson);
+			messageContext.setVariable(CONTEXT_TARGET_SUBMITTER, eventJson);
 
             		return ExecutionResult.SUCCESS;
 

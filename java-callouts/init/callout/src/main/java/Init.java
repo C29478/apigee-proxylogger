@@ -9,20 +9,22 @@ import com.apigee.flow.message.MessageContext;
 
 
 public class Init implements Execution {
-	
+
+    private static final int CONTEXT_VARIABLE_TARGET_LOG = "events";
+
 	/**
 	 * Stores the variables in a log object
-	 * 
+	 *
 	 * The initializer has already executed so this methods first gets the
          * variables that need to be logged (logVariables) and the object containing
          * the variables collected thusfar (log)
 	 *
 	 * @param messageContext
-	 * @param executionResult 
+	 * @param executionResult
 	 * @return ExecutionResult containing status of the execution
          */
 	public ExecutionResult execute(MessageContext messageContext, ExecutionContext executionContext) {
-		
+
 		try {
 			JSONArray log = new JSONArray();
 

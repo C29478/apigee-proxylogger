@@ -10,35 +10,39 @@ import com.apigee.flow.message.MessageContext;
 
 
 public class Logger implements Execution {
-	
+
+    private static final String CONTEXT_VARIABLES_TO_LOG = "logVariables";
+    private static final String CONTEXT_VARIABLES_TO_LOG_DELIM = ",";
+    private static final String CONTEXT_TARGET_LOG = "events";
+
 	/**
 	 * Stores the variables in a log object
-	 * 
+	 *
 	 * The initializer has already executed so this methods first gets the
          * variables that need to be logged (logVariables) and the object containing
          * the variables collected thusfar (log)
 	 *
 	 * @param messageContext
-	 * @param executionResult 
+	 * @param executionResult
 	 * @return ExecutionResult containing status of the execution
          */
 	public ExecutionResult execute(MessageContext messageContext, ExecutionContext executionContext) {
-		
+
 		try {
 			// Gather log variables
 			String[] logVariables = this.gatherLogVariables(messageContext);
-			
+
 			// Get the log
-			JSONArray log = this.getLog(messageContext); 
-			
+			JSONArray log = this.getLog(messageContext);
+
 			// Create object for containing log values
 			JSONObject event = createEventObject(messageContext, logVariables);
 
 			// Add the event to the log
 			log.add(event);
-			
+
 			// Set the context variable equal to the log.
-			messageContext.setVariable("events", log);
+			messageContext.setVariable(CONTEXT_TARGET_LOG, log);
 
             		return ExecutionResult.SUCCESS;
 
@@ -47,7 +51,7 @@ public class Logger implements Execution {
 		}
 	}
 
-	/** 
+	/**
 	 * Retrieves variables that need to be logged from the messageContext
 	 *
 	 * These variables are retrieved by GetLogVariables policy from environment KVM
@@ -56,21 +60,21 @@ public class Logger implements Execution {
 	 */
 	private static String[] gatherLogVariables(MessageContext messageContext) {
 
-		String logVariablesFromContext = messageContext.getVariable("logVariables");
-		
-		String[] logVariables = logVariablesFromContext.split(",");
+		String logVariablesFromContext = messageContext.getVariable(CONTEXT_VARIABLES_TO_LOG);
+
+		String[] logVariables = logVariablesFromContext.split(CONTEXT_VARIABLES_TO_LOG_DELIM);
 
 		return logVariables;
 	}
 
-	/** 
+	/**
 	 * Retrieves the variables that were gather thusfar by the proxy
-	 * 
+	 *
 	 * @return JSONArray containing the variables stored thusfar
 	 */
 	private static JSONArray getLog(MessageContext messageContext) {
 
-		JSONArray log = messageContext.getVariable("events");
+		JSONArray log = messageContext.getVariable(CONTEXT_TARGET_LOG);
 
 		return log;
 
@@ -85,6 +89,8 @@ public class Logger implements Execution {
 				String key = variables[i];
 
 				Object value = messageContext.getVariable(key);
+
+                // Apigee doesn't always return an object that can be written to JSON
 
 				boolean isStringOrInt = (value instanceof Integer || value instanceof String);
 
