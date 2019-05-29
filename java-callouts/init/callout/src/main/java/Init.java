@@ -25,7 +25,6 @@ public class Init implements Execution {
 		
 		try {
 			JSONArray log = new JSONArray();
-			//String[] log = {"something","anotherthing"};
 
 			messageContext.setVariable("events", log);
 
